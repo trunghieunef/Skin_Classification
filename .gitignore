@@ -5,3 +5,4 @@ __pycache__/
 .env
 implementation_plan.md.resolved
 models/
+.worktrees/

@@ -83,8 +83,15 @@ def get_transforms(phase: str = 'train', image_size: int = 224) -> A.Compose:
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(p=0.5),
             A.RandomRotate90(p=0.5),
-            A.ShiftScaleRotate(shift_limit=0.1, scale_limit=0.15,
-                               rotate_limit=30, border_mode=0, p=0.6),
+            A.Affine(
+                scale=(0.85, 1.15),
+                translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)},
+                rotate=(-30, 30),
+                shear=0,
+                border_mode=0,
+                fill=0,
+                p=0.6,
+            ),
             A.OneOf([
                 A.ColorJitter(brightness=0.2, contrast=0.2,
                               saturation=0.2, hue=0.1, p=1.0),
@@ -100,8 +107,13 @@ def get_transforms(phase: str = 'train', image_size: int = 224) -> A.Compose:
                 A.MotionBlur(blur_limit=5, p=1.0),
                 A.GaussianBlur(blur_limit=5, p=1.0),
             ], p=0.2),
-            A.CoarseDropout(max_holes=8, max_height=image_size // 8,
-                            max_width=image_size // 8, p=0.3),
+            A.CoarseDropout(
+                num_holes_range=(1, 8),
+                hole_height_range=(image_size // 8, image_size // 8),
+                hole_width_range=(image_size // 8, image_size // 8),
+                fill=0,
+                p=0.3,
+            ),
             A.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
             ToTensorV2(),
         ])

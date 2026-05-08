@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,6 +25,7 @@
         <span class="brand-badge">Clinical</span>
       </div>
       <div class="nav-info">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">Dark</button>
         <div class="status-dot" id="statusDot"></div>
         <span id="statusText" class="status-label">Đang kết nối...</span>
       </div>
@@ -48,6 +49,11 @@
 
   <!-- ── Main App ────────────────────────────────────────────── -->
   <main class="app-container">
+    <div class="flow-steps" aria-label="Analysis steps">
+      <div class="flow-step is-active" id="stepUpload">1. Upload</div>
+      <div class="flow-step" id="stepReview">2. Review</div>
+      <div class="flow-step" id="stepResults">3. Results</div>
+    </div>
     <div class="app-grid">
 
       <!-- Left: Upload Panel -->
@@ -85,6 +91,8 @@
           </div>
         </div>
 
+        <div class="inline-error" id="inlineError" role="alert" style="display:none"></div>
+
         <!-- File Info -->
         <div class="file-info" id="fileInfo" style="display:none">
           <div class="file-info-left">
@@ -95,6 +103,7 @@
         </div>
 
         <!-- Analyze Button -->
+        <div class="review-panel" id="reviewPanel">
         <button class="btn-analyze" id="analyzeBtn" disabled>
           <span class="btn-text">Tiến Hành Phân Tích</span>
           <div class="btn-spinner" style="display:none">
@@ -104,9 +113,10 @@
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/>
           </svg>
         </button>
+        </div>
 
         <!-- Disclaimer -->
-        <div class="disclaimer">
+        <div class="disclaimer" id="trustSection">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <p><strong>Lưu ý y khoa:</strong> Phần mềm chỉ đóng vai trò chẩn đoán tham khảo sơ bộ. Bệnh nhân cần thăm khám trực tiếp bác sĩ chuyên khoa da liễu để có phác đồ điều trị chính xác.</p>
         </div>

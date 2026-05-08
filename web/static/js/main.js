@@ -24,6 +24,7 @@ const RISK_LABEL = {
 };
 
 const CLASS_ORDER = ['nv','mel','bkl','bcc','akiec','df','vasc'];
+const THEME_KEY = 'dermai-theme';
 
 // ── DOM References ──────────────────────────────────────────────────
 const dropZone      = document.getElementById('dropZone');
@@ -61,8 +62,50 @@ const retryBtn       = document.getElementById('retryBtn');
 const statusDot      = document.getElementById('statusDot');
 const statusText     = document.getElementById('statusText');
 const classesGrid    = document.getElementById('classesGrid');
+const themeToggle    = document.getElementById('themeToggle');
+const stepUpload     = document.getElementById('stepUpload');
+const stepReview     = document.getElementById('stepReview');
+const stepResults    = document.getElementById('stepResults');
+const reviewPanel    = document.getElementById('reviewPanel');
+const inlineError    = document.getElementById('inlineError');
 
 let selectedFile = null;
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  if (themeToggle) {
+    themeToggle.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+  }
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+function setFlowState(state) {
+  const activeMap = {
+    upload: stepUpload,
+    review: stepReview,
+    loading: stepResults,
+    results: stepResults,
+    error: selectedFile ? stepReview : stepUpload,
+  };
+
+  [stepUpload, stepReview, stepResults].forEach(step => {
+    if (step) step.classList.remove('is-active');
+  });
+
+  const activeStep = activeMap[state] || stepUpload;
+  if (activeStep) activeStep.classList.add('is-active');
+
+  if (reviewPanel) {
+    reviewPanel.classList.toggle('is-active', state === 'review' || state === 'error');
+  }
+}
+
+function showInlineError(message) {
+  if (!inlineError) return;
+  inlineError.textContent = message || '';
+  inlineError.style.display = message ? 'block' : 'none';
+}
 
 // ── Health Check ────────────────────────────────────────────────────
 async function checkHealth() {
@@ -116,6 +159,7 @@ function formatBytes(bytes) {
 
 function showPreview(file) {
   selectedFile = file;
+  showInlineError('');
   const url = URL.createObjectURL(file);
   previewImg.src = url;
   dropContent.style.display  = 'none';
@@ -128,6 +172,7 @@ function showPreview(file) {
   fileSize.textContent   = formatBytes(file.size);
 
   analyzeBtn.disabled = false;
+  setFlowState('review');
 
   // Reset results
   showSection('placeholder');
@@ -141,6 +186,8 @@ function clearFile() {
   previewContent.style.display = 'none';
   fileInfo.style.display      = 'none';
   analyzeBtn.disabled         = true;
+  showInlineError('');
+  setFlowState('upload');
   showSection('placeholder');
 }
 
@@ -148,11 +195,13 @@ function handleFile(file) {
   if (!file) return;
   const allowed = ['image/jpeg','image/png','image/bmp','image/webp'];
   if (!allowed.includes(file.type)) {
-    showError('Định dạng không hỗ trợ. Hãy chọn file JPG, PNG, BMP hoặc WEBP.');
+    showInlineError('Định dạng không hỗ trợ. Hãy chọn file JPG, PNG, BMP hoặc WEBP.');
+    setFlowState('upload');
     return;
   }
   if (file.size > 16 * 1024 * 1024) {
-    showError('File quá lớn. Tối đa 16 MB.');
+    showInlineError('File quá lớn. Tối đa 16 MB.');
+    setFlowState('upload');
     return;
   }
   showPreview(file);
@@ -164,7 +213,15 @@ clearBtn.addEventListener('click',  clearFile);
 resetBtn.addEventListener('click',  clearFile);
 retryBtn.addEventListener('click',  () => {
   showSection('placeholder');
+  showInlineError('');
+  setFlowState(selectedFile ? 'review' : 'upload');
   if (selectedFile) analyzeBtn.disabled = false;
+});
+
+themeToggle.addEventListener('click', () => {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(nextTheme);
 });
 
 fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
@@ -298,14 +355,18 @@ function showSection(name) {
   loadingState.style.display   = name === 'loading'     ? 'flex'  : 'none';
   resultsContent.style.display = name === 'results'     ? 'block' : 'none';
   errorState.style.display     = name === 'error'       ? 'flex'  : 'none';
+  setFlowState(name === 'placeholder' && selectedFile ? 'review' : name);
 }
 
 function showError(msg) {
   errorMsg.textContent = msg;
+  showInlineError(msg);
   showSection('error');
 }
 
 // ── Init ─────────────────────────────────────────────────────────────
+applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+setFlowState('upload');
 checkHealth();
 buildClassCards();
 

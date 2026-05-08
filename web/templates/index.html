@@ -7,7 +7,7 @@
   <meta name="description" content="Hệ thống AI phân loại bệnh ngoài da từ ảnh sử dụng EfficientNet-B3 và bộ dữ liệu HAM10000" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 <body>
@@ -17,12 +17,12 @@
     <div class="nav-inner">
       <div class="nav-brand">
         <div class="brand-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
           </svg>
         </div>
         <span class="brand-name">DermAI</span>
-        <span class="brand-badge">Beta</span>
+        <span class="brand-badge">Clinical</span>
       </div>
       <div class="nav-info">
         <div class="status-dot" id="statusDot"></div>
@@ -33,13 +33,15 @@
 
   <!-- ── Hero ───────────────────────────────────────────────── -->
   <section class="hero">
-    <div class="hero-bg"></div>
+    <div class="hero-bg">
+      <div class="hero-shape hero-shape-1"></div>
+      <div class="hero-shape hero-shape-2"></div>
+    </div>
     <div class="hero-content">
-      <div class="hero-tag">Powered by EfficientNet-B3 · HAM10000</div>
-      <h1 class="hero-title">Phân Loại Bệnh <span class="gradient-text">Ngoài Da</span><br />Bằng AI</h1>
+      <div class="hero-tag">Hệ Thống Phân Tích Cấp Độ Lâm Sàng</div>
+      <h1 class="hero-title">Chẩn Đoán Tổn Thương Da<br />Với <span class="gradient-text">Trí Tuệ Nhân Tạo</span></h1>
       <p class="hero-subtitle">
-        Upload ảnh tổn thương da — hệ thống sẽ phân tích và đưa ra kết quả
-        trong vài giây với độ chính xác cao.
+        Tải ảnh chụp vùng da tổn thương lên hệ thống để nhận kết quả phân tích nhanh chóng và độ chính xác cao từ mô hình chuẩn y tế.
       </p>
     </div>
   </section>
@@ -51,8 +53,10 @@
       <!-- Left: Upload Panel -->
       <div class="panel upload-panel">
         <h2 class="panel-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Tải Ảnh Lên
+          <div class="icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          Tải Ảnh Lên Hệ Thống
         </h2>
 
         <!-- Drop Zone -->
@@ -60,79 +64,77 @@
           <input type="file" id="fileInput" accept="image/*" hidden />
           <div class="drop-content" id="dropContent">
             <div class="drop-icon">
-              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="4" y="4" width="56" height="56" rx="8" stroke-dasharray="6 4"/>
-                <circle cx="32" cy="26" r="8"/>
-                <path d="M16 52 Q20 38 32 38 Q44 38 48 52"/>
+              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="8" y="8" width="48" height="48" rx="8" stroke-dasharray="6 4"/>
+                <circle cx="32" cy="28" r="8"/>
+                <path d="M18 50 Q22 38 32 38 Q42 38 46 50"/>
               </svg>
             </div>
-            <p class="drop-title">Kéo & Thả ảnh vào đây</p>
+            <p class="drop-title">Kéo & thả hình ảnh vào khu vực này</p>
             <p class="drop-sub">hoặc</p>
-            <button class="btn-browse" id="browseBtn" type="button">Chọn Ảnh</button>
-            <p class="drop-hint">PNG, JPG, JPEG · Tối đa 16MB</p>
+            <button class="btn-browse" id="browseBtn" type="button">Duyệt File Từ Máy</button>
+            <p class="drop-hint">Định dạng hỗ trợ: PNG, JPG, JPEG · Dung lượng tối đa: 16MB</p>
           </div>
 
           <!-- Preview (hidden initially) -->
           <div class="preview-content" id="previewContent" style="display:none">
             <img id="previewImg" src="" alt="Preview" />
-            <button class="btn-clear" id="clearBtn" title="Xóa ảnh">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <button class="btn-clear" id="clearBtn" title="Gỡ bỏ ảnh">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
         </div>
 
         <!-- File Info -->
         <div class="file-info" id="fileInfo" style="display:none">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-          <span id="fileName">-</span>
+          <div class="file-info-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            <span id="fileName" class="file-name-text">-</span>
+          </div>
           <span id="fileSize" class="file-size-badge">-</span>
         </div>
 
         <!-- Analyze Button -->
         <button class="btn-analyze" id="analyzeBtn" disabled>
-          <span class="btn-text">Phân Tích Ảnh</span>
+          <span class="btn-text">Tiến Hành Phân Tích</span>
           <div class="btn-spinner" style="display:none">
             <div class="spinner"></div>
           </div>
-          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/>
           </svg>
         </button>
 
         <!-- Disclaimer -->
         <div class="disclaimer">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <p>Kết quả chỉ mang tính tham khảo. Vui lòng tham khảo ý kiến bác sĩ để được chẩn đoán chính xác.</p>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p><strong>Lưu ý y khoa:</strong> Phần mềm chỉ đóng vai trò chẩn đoán tham khảo sơ bộ. Bệnh nhân cần thăm khám trực tiếp bác sĩ chuyên khoa da liễu để có phác đồ điều trị chính xác.</p>
         </div>
       </div>
 
       <!-- Right: Results Panel -->
       <div class="panel results-panel" id="resultsPanel">
-
         <!-- Placeholder -->
         <div class="placeholder" id="placeholder">
           <div class="placeholder-icon">
-            <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="40" cy="40" r="35" stroke-dasharray="8 5"/>
-              <path d="M25 40 Q30 25 40 25 Q50 25 55 40 Q50 55 40 55 Q30 55 25 40Z"/>
-              <circle cx="40" cy="40" r="5"/>
+            <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="20" y="15" width="40" height="50" rx="4" stroke-dasharray="6 4" />
+              <path d="M30 40 L40 50 L50 35"/>
             </svg>
           </div>
-          <p class="placeholder-title">Kết quả sẽ hiển thị ở đây</p>
-          <p class="placeholder-sub">Upload ảnh và nhấn "Phân Tích Ảnh" để bắt đầu</p>
+          <p class="placeholder-title">Kết Quả Phân Tích Sẽ Hiển Thị Tại Đây</p>
+          <p class="placeholder-sub">Hệ thống sẽ tổng hợp đánh giá rủi ro và các chỉ số xác suất liên quan sau khi quá trình phân tích hoàn tất.</p>
         </div>
 
         <!-- Loading State -->
         <div class="loading-state" id="loadingState" style="display:none">
-          <div class="dna-loader">
-            <div class="dna-bar" style="--delay:0s"></div>
-            <div class="dna-bar" style="--delay:0.1s"></div>
-            <div class="dna-bar" style="--delay:0.2s"></div>
-            <div class="dna-bar" style="--delay:0.3s"></div>
-            <div class="dna-bar" style="--delay:0.4s"></div>
+          <div class="medical-loader">
+            <svg class="heartbeat" viewBox="0 0 500 200">
+               <path class="heartbeat-line" d="M0,100 L150,100 L180,20 L240,180 L280,100 L500,100" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <p class="loading-text">Đang phân tích ảnh...</p>
-          <p class="loading-sub">AI đang xử lý, vui lòng chờ</p>
+          <p class="loading-text">Đang đối chiếu dữ liệu y khoa...</p>
+          <p class="loading-sub">Mô hình AI đang trích xuất đặc trưng hình ảnh, vui lòng đợi giây lát.</p>
         </div>
 
         <!-- Results -->
@@ -141,8 +143,8 @@
           <!-- Top Prediction Card -->
           <div class="prediction-card" id="predictionCard">
             <div class="prediction-header">
-              <div>
-                <p class="prediction-label">Kết Quả Phân Loại</p>
+              <div class="prediction-main-info">
+                <p class="prediction-label">Nhận Diện Chính</p>
                 <h3 class="prediction-class" id="predClass">—</h3>
                 <p class="prediction-fullname" id="predFullname">—</p>
               </div>
@@ -153,7 +155,7 @@
                 </svg>
                 <div class="ring-label">
                   <span id="confPercent">0%</span>
-                  <small>Độ tin cậy</small>
+                  <small>Độ Tin Cậy</small>
                 </div>
               </div>
             </div>
@@ -167,35 +169,42 @@
 
           <!-- Probability Bars -->
           <div class="prob-section">
-            <h4 class="section-title">Xác Suất Từng Loại</h4>
+            <h4 class="section-title">Phân Bố Xác Suất Tham Khảo (7 Nhóm Bệnh)</h4>
             <div class="prob-bars" id="probBars"></div>
           </div>
 
           <!-- Disease Info -->
           <div class="info-card" id="infoCard">
             <h4 class="section-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-              Thông Tin & Khuyến Nghị
+              <div class="icon-wrap-small">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </div>
+              Đặc Điểm Lâm Sàng & Khuyến Nghị
             </h4>
             <p class="info-desc" id="infoDesc">—</p>
             <div class="recommendation-box" id="recommendationBox">
-              <div class="rec-icon">💊</div>
+              <div class="rec-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+              </div>
               <p id="recText">—</p>
             </div>
           </div>
 
           <!-- Reset Button -->
           <button class="btn-reset" id="resetBtn">
-            Phân Tích Ảnh Khác
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Thực Hiện Phân Tích Mới
           </button>
         </div>
 
         <!-- Error State -->
         <div class="error-state" id="errorState" style="display:none">
-          <div class="error-icon">⚠️</div>
-          <p class="error-title">Có lỗi xảy ra</p>
+          <div class="error-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <p class="error-title">Lỗi kết nối phân tích</p>
           <p class="error-msg" id="errorMsg">—</p>
-          <button class="btn-retry" id="retryBtn">Thử lại</button>
+          <button class="btn-retry" id="retryBtn">Thử Lại Trình Tư</button>
         </div>
 
       </div>
@@ -205,15 +214,46 @@
   <!-- ── Classes Reference ──────────────────────────────────── -->
   <section class="classes-section">
     <div class="classes-container">
-      <h2 class="classes-title">7 Loại Tổn Thương Da Được Phân Loại</h2>
+      <h2 class="classes-title">Danh Mục Bệnh Lý Hỗ Trợ Nhận Diện</h2>
       <div class="classes-grid" id="classesGrid"></div>
     </div>
   </section>
 
   <!-- ── Footer ─────────────────────────────────────────────── -->
   <footer class="footer">
-    <p>DermAI · EfficientNet-B3 · HAM10000 Dataset · Chỉ dùng cho mục đích nghiên cứu</p>
+    <p>DermAI Medical System · Hệ thống phân tích ứng dụng trí tuệ nhân tạo dùng trong hỗ trợ nghiên cứu chẩn đoán hình ảnh da liễu</p>
   </footer>
+
+  <!-- ── Chatbot Widget ───────────────────────────────────────── -->
+  <div class="chat-widget" id="chatWidget">
+    <div class="chat-panel" id="chatPanel">
+      <div class="chat-header">
+        <div class="chat-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10a9.98 9.98 0 0 1-5.04-1.36l-3.8 1.02a1 1 0 0 1-1.22-1.22l1.02-3.8A9.98 9.98 0 0 1 2 12C2 6.48 6.48 2 12 2Z"/></svg>
+        </div>
+        <div>
+          <div class="chat-title">DermAI Assistant</div>
+          <div class="chat-subtitle">Trợ lý y khoa AI</div>
+        </div>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <div class="chat-msg ai">
+          <p>Xin chào! Tôi là trợ lý ảo DermAI.</p>
+          <p>Bạn có thể hỏi tôi bất kỳ thông tin nào về 7 loại bệnh da liễu mà hệ thống hỗ trợ phân loại (Melanoma, Basal Cell Carcinoma, v.v.).</p>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Nhập câu hỏi của bạn..." autocomplete="off"/>
+        <button class="chat-send-btn" id="chatSendBtn" title="Gửi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <button class="chat-toggle" id="chatToggle" title="Mở trợ lý ảo">
+      <svg class="icon-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
 
   <script src="/static/js/main.js"></script>
 </body>

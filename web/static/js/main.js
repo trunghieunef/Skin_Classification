@@ -238,7 +238,7 @@ function displayResults(data) {
   ringFill.style.strokeDashoffset = offset;
 
   // Color ring by confidence
-  if (confidence >= 0.8)      ringFill.style.stroke = '#00d4aa';
+  if (confidence >= 0.8)      ringFill.style.stroke = '#0284c7'; // Doctor Blue
   else if (confidence >= 0.6) ringFill.style.stroke = '#f59e0b';
   else                         ringFill.style.stroke = '#ef4444';
 
@@ -260,11 +260,11 @@ function displayResults(data) {
     const row = document.createElement('div');
     row.className = 'prob-row';
     row.innerHTML = `
-      <span class="prob-name" style="${isPred ? 'color:var(--teal)' : ''}">${cls.toUpperCase()}</span>
+      <span class="prob-name" style="${isPred ? 'color:var(--primary)' : ''}">${cls.toUpperCase()}</span>
       <div class="prob-bar-wrap">
         <div class="prob-bar-fill ${isPred ? 'predicted' : ''}" data-width="${prob * 100}"></div>
       </div>
-      <span class="prob-val" style="${isPred ? 'color:var(--teal)' : 'color:var(--text-dim)'}">${pctVal}%</span>
+      <span class="prob-val" style="${isPred ? 'color:var(--primary)' : 'color:var(--text-dim)'}">${pctVal}%</span>
     `;
     probBars.appendChild(row);
 
@@ -324,4 +324,97 @@ document.addEventListener('paste', e => {
       break;
     }
   }
+});
+
+// ── Chatbot Logic (Static Frontend) ──────────────────────────────────
+const chatWidget  = document.getElementById('chatWidget');
+const chatToggle  = document.getElementById('chatToggle');
+const chatPanel   = document.getElementById('chatPanel');
+const chatBody    = document.getElementById('chatBody');
+const chatInput   = document.getElementById('chatInput');
+const chatSendBtn = document.getElementById('chatSendBtn');
+
+const KNOWLEDGE_BASE = {
+  'melanoma': 'Melanoma (Ung thư hắc tố) là loại ung thư da nguy hiểm nhất, phát triển từ các tế bào sản sinh sắc tố. Nó có khả năng di căn nhanh. Bạn cần đi khám bác sĩ ngay lập tức.',
+  'ung thư hắc tố': 'Melanoma (Ung thư hắc tố) là loại ung thư da nguy hiểm nhất, phát triển từ các tế bào sản sinh sắc tố. Nó có khả năng di căn nhanh. Bạn cần đi khám bác sĩ ngay lập tức.',
+  'mel': 'Melanoma (Ung thư hắc tố) là loại ung thư da nguy hiểm nhất, phát triển từ các tế bào sản sinh sắc tố. Nó có khả năng di căn nhanh. Bạn cần đi khám bác sĩ ngay lập tức.',
+  'bcc': 'Basal Cell Carcinoma (Ung thư biểu mô tế bào đáy) là loại ung thư da phổ biến nhất nhưng tiến triển chậm và hiếm khi di căn. Tuy nhiên, nó có thể gây biến dạng nếu không điều trị.',
+  'tế bào đáy': 'Basal Cell Carcinoma (Ung thư biểu mô tế bào đáy) là loại ung thư da phổ biến nhất nhưng tiến triển chậm và hiếm khi di căn. Tuy nhiên, nó có thể gây biến dạng nếu không điều trị.',
+  'akiec': 'Actinic Keratoses (Dày sừng quang hóa) là tổn thương tiền ung thư do phơi nắng mãn tính. Cần theo dõi và điều trị để tránh tiến triển thành ung thư tế bào vảy.',
+  'dày sừng': 'Actinic Keratoses (Dày sừng quang hóa) là tổn thương tiền ung thư do phơi nắng mãn tính. Cần theo dõi và điều trị để tránh tiến triển thành ung thư tế bào vảy.',
+  'bkl': 'Benign Keratosis (Dày sừng tiết bã) là tổn thương da lành tính, thường gặp ở người lớn tuổi, giống như những đốm màu nâu hoặc đen dính trên da. Không nguy hiểm.',
+  'lành tính': 'Hệ thống có thể nhận diện các loại lành tính như Dày sừng tiết bã (bkl), Nốt ruồi (nv), U xơ da (df), và Tổn thương mạch máu (vasc). Dù lành tính nhưng nếu có thay đổi bất thường (to ra, ngứa, chảy máu) thì vẫn nên đi khám.',
+  'df': 'Dermatofibroma (U xơ da) là nốt sần lành tính cứng chắc, thường xuất hiện ở chân do côn trùng cắn hoặc chấn thương nhỏ. Không cần điều trị trừ khi gây khó chịu.',
+  'u xơ': 'Dermatofibroma (U xơ da) là nốt sần lành tính cứng chắc, thường xuất hiện ở chân do côn trùng cắn hoặc chấn thương nhỏ. Không cần điều trị trừ khi gây khó chịu.',
+  'nv': 'Melanocytic Nevi (Nốt ruồi) là sự phát triển lành tính của các tế bào hắc tố. Đa số không nguy hiểm, nhưng cần theo dõi quy tắc ABCDE (Bất đối xứng, Bờ mờ, Màu sắc, Đường kính, Tiến triển).',
+  'nốt ruồi': 'Melanocytic Nevi (Nốt ruồi) là sự phát triển lành tính của các tế bào hắc tố. Đa số không nguy hiểm, nhưng cần theo dõi quy tắc ABCDE (Bất đối xứng, Bờ mờ, Màu sắc, Đường kính, Tiến triển).',
+  'vasc': 'Vascular Lesions (Tổn thương mạch máu) bao gồm u máu, bớt đỏ. Thường là lành tính, hình thành do mạch máu mở rộng hoặc tăng sinh.',
+  'mạch máu': 'Vascular Lesions (Tổn thương mạch máu) bao gồm u máu, bớt đỏ. Thường là lành tính, hình thành do mạch máu mở rộng hoặc tăng sinh.',
+  'khám': 'Hệ thống chỉ mang tính hỗ trợ chẩn đoán. Mọi quyết định y khoa bạn đều nên thăm khám trực tiếp với bác sĩ chuyên khoa da liễu tại bệnh viện uy tín.',
+  'chào': 'Xin chào! Tôi có thể giúp bạn tìm hiểu thêm thông tin về 7 loại bệnh da liễu mà hệ thống phân loại. Bạn muốn hỏi về bệnh gì?'
+};
+
+// Toggle widget
+chatToggle.addEventListener('click', () => {
+  chatWidget.classList.toggle('open');
+  if (chatWidget.classList.contains('open')) {
+    chatInput.focus();
+  }
+});
+
+// Append message
+function appendMessage(text, sender) {
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `chat-msg ${sender}`;
+  msgDiv.innerHTML = `<p>${text}</p>`;
+  chatBody.appendChild(msgDiv);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function showTypingIndicator() {
+  const div = document.createElement('div');
+  div.className = 'typing-indicator';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chatBody.appendChild(div);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  const indicator = document.getElementById('typingIndicator');
+  if (indicator) indicator.remove();
+}
+
+function generateReply(text) {
+  const lowerText = text.toLowerCase();
+  
+  // Basic exact/includes match
+  for (const [key, answer] of Object.entries(KNOWLEDGE_BASE)) {
+    if (lowerText.includes(key)) return answer;
+  }
+  
+  return 'Xin lỗi, hiện tại tôi chỉ có thông tin về 7 loại bệnh da liễu trong hệ thống (Melanoma, Basal Cell, Nevi...). Vui lòng nhập tên bệnh để tôi hỗ trợ thêm nhé.';
+}
+
+function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  // Append User message
+  appendMessage(text, 'user');
+  chatInput.value = '';
+
+  // Simulate AI typing
+  showTypingIndicator();
+  
+  setTimeout(() => {
+    removeTypingIndicator();
+    const reply = generateReply(text);
+    appendMessage(reply, 'ai');
+  }, 1000 + Math.random() * 800);
+}
+
+chatSendBtn.addEventListener('click', sendMessage);
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
 });

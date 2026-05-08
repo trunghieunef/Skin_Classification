@@ -46,12 +46,12 @@ def init_model():
     if os.path.exists(MODEL_PATH):
         try:
             predictor = load_predictor(MODEL_PATH, device)
-            print(f"✓ Model loaded successfully from {MODEL_PATH}")
+            print(f"[OK] Model loaded successfully from {MODEL_PATH}")
         except Exception as e:
-            print(f"✗ Failed to load model: {e}")
+            print(f"[ERROR] Failed to load model: {e}")
             predictor = None
     else:
-        print(f"⚠ Model file not found at {MODEL_PATH}")
+        print(f"[WARN] Model file not found at {MODEL_PATH}")
         print("  Train the model first using the Colab notebook.")
         predictor = None
 
